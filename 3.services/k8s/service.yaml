@@ -1,0 +1,43 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: goserver-service
+
+spec:
+  selector:
+    # get all pods thas has app: goserver in label metadata
+    # all pods that matches this statment will make part of this service
+    app: goserver
+  
+  # we have 4 types of services: ClusterIP, NodePort, LoadBalancer and headless
+  type: ClusterIP
+  ports:
+    - name: goserver-service
+      port: 80 # port that we are going to access when call the svc
+      targetPort: 4000 # default 80, container port
+      protocol: TCP
+
+# ------------------------------
+# not a common type
+# when we need to access our service from outside the application
+  # type: NodePort
+  # ports:
+  #   - name: goserver-service
+  #     port: 80 # port that we are going to access when call the svc
+  #     targetPort: 4000 # default 80, container port
+  #     protocol: TCP
+  #     nodePort: 30001 # from 30000 < x > 32767
+      # this node port will be open on every node, and we can acess the service passing the NodeIP:300001
+
+# --------------------
+# generate an external ip to access the service from outside the cluster.
+# it's a common usecase when we use another cluster such as Google or AWS,...
+  # type: LoadBalancer
+  # ports:
+  #   - name: goserver-service
+  #     port: 80 # port that we are going to access when call the svc
+  #     targetPort: 4000 # default 80, container port
+  #     protocol: TCP
+# the difference is that when we run a 'kubectl get services' in a cloud provider the LoadBalancer type will generante an External IP to us
+# we can use this IP to access our service
+
