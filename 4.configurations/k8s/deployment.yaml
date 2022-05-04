@@ -20,23 +20,49 @@ spec:
       labels:
         app: "goserver"
     spec:
+    
       containers:
         - name: "goserver"
-          image: gbrotas/go-hello:v5
-          env:
-            - name: NAME
-              # first method => Hardcode
-              # value: "Gabriel" 
+          image: gbrotas/go-hello:v6.3
+          # third method
+          envFrom:
+            - configMapRef:
+                name: goserver-env # load all keys          
+            - secretRef:
+                name: goserver-secret
+          
+          # env:
+          #   - name: NAME
+          #     # first method => Hardcode
+          #     # value: "Gabriel" 
               
-              #second method
-              valueFrom:
-                configMapKeyRef:
-                  name: goserver-env
-                  key: NAME
+          #     #second method
+          #     valueFrom:
+          #       configMapKeyRef:
+          #         name: goserver-env
+          #         key: NAME
 
-            - name: AGE
-              # value: "21" # first method
-              valueFrom:
-                configMapKeyRef:
-                  name: goserver-env
-                  key: AGE
+          #   - name: AGE
+          #     # value: "21" # first method
+          #     #second method
+          #     valueFrom:
+          #       configMapKeyRef:
+          #         name: goserver-env
+          #         key: AGE
+
+          # fourth method
+          volumeMounts:
+          # mount the volume config into my project
+            - mountPath: "/go/myfamily"
+              name: config
+              readOnly: true
+
+      # fourth method -> transform the config map into volume
+      # declare a volume with the values of members from configmap-family
+      volumes:
+        - name: config
+          configMap:
+            name: configmap-family
+            items:
+              - key: members
+                path: "family.txt"
