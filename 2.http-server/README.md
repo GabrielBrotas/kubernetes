@@ -39,7 +39,7 @@ kubectl delede pod <podname>
 ## Third step -----------------
 Deployment 
 
-### Problem:
+**Problem:** <br >
 If we push another image to docker hub
 ```bash
 docker build -t gbrotas/go-hello:v2 .
@@ -66,19 +66,20 @@ and apply the changes
 kubectl apply -f k8s/replica-set.yaml
 ```
 
-Our pods running will not be removed to update to the new version
-we can verify the pods image running with the command
+Our pods running will not be removed to update to the new version; <br/>
+We can verify the pods image running with the command
 ```bash
 kubectl describe pod <pod name>
 ```
 
-we need to delete the pods manually to generate a new pod version with the new replica-set version
-```
+we need to delete the pods manually in order to generate a new pod with the new replica-set version
+```bash
 kubectl delede pod <podname>
 ```
 
-### Solution
-**Deployment** -> **ReplicaSet** -> **Pod**
+**Solution** <br >
+
+**Deployment** -> **ReplicaSet** -> **Pod** <br >
 The deployment will create a replica set and the replicaset will create the pods.
 If we change our deployment version it will create another replicaset and delete the older version
 
