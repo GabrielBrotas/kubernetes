@@ -1,0 +1,57 @@
+# replica set manage the pods to be running, if the pod drop for some reason it will be generated again
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: goserver
+  labels:
+    app: goserver
+  
+spec:
+  selector: 
+    matchLabels:
+      app: goserver
+  # 2 pods running
+  replicas: 1
+
+  # pod template that we want running in our replica set
+  template:
+    metadata:
+      labels:
+        app: "goserver"
+    spec:
+      containers:
+        - name: "goserver"
+          image: gbrotas/go-hello:v7.2
+
+          startupProbe:
+            httpGet:
+              path: /healthz
+              port: 4000
+            periodSeconds: 3
+            failureThreshold: 30 # 30 * 3 = 1:30min, it will be listening the application for at least 30 second, if the application doesn't start after this time it will never be up            
+            timeoutSeconds: 1 
+            successThreshold: 1
+            initialDelaySeconds: 5 # wait 5 seconds until start check if the application can receive traffic
+
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 4000 # container port
+            periodSeconds: 5
+            # how many times it needs to throw error to restart the container
+            failureThreshold: 1 # limit of failure times
+            # how long this request should take to we decide that is with failure
+            timeoutSeconds: 1 # if it takes 5 seconds will throw a failure
+            # how many times it needs to get success to verify if the application is health
+            successThreshold: 1
+
+          # only access the application when ready
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: 4000
+            periodSeconds: 3
+            failureThreshold: 1 # if got one failure the application is not ready
+            timeoutSeconds: 1 
+            successThreshold: 1
