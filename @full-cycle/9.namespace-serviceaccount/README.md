@@ -54,5 +54,4 @@ the recommendations is to have one account for project and define just the neces
 
 ```bash
     kubectl apply -f k8s/security.yaml
-
 ```
