@@ -1,0 +1,67 @@
+# replica set manage the pods to be running, if the pod drop for some reason it will be generated again
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: goserver
+  labels:
+    app: goserver
+  
+spec:
+  selector: 
+    matchLabels:
+      app: goserver
+  # 2 pods running
+  replicas: 1
+
+  # pod template that we want running in our replica set
+  template:
+    metadata:
+      labels:
+        app: "goserver"
+    spec:
+      containers:
+        - name: "goserver"
+          image: gbrotas/go-hello:v8.1
+
+          # we are reserving this resource from our cluster for our pod
+          resources:
+            # the minimum our container(pod) needs to run
+            requests: 
+              cpu: "0.3" # unit => vCPU
+              memory: 20Mi 
+            limits: 
+              cpu: "0.3"
+              memory: 25Mi
+
+          startupProbe:
+            httpGet:
+              path: /healthz
+              port: 4000
+            periodSeconds: 3
+            failureThreshold: 60 # 60 * 3 = 180 => 3min
+            timeoutSeconds: 1 
+            successThreshold: 1
+            initialDelaySeconds: 5 # wait 5 seconds until start check if the application can receive traffic
+
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 4000 # container port
+            periodSeconds: 5
+            # how many times it needs to throw error to restart the container
+            failureThreshold: 1 # limit of failure times
+            # how long this request should take to we decide that is with failure
+            timeoutSeconds: 1 # if it takes 5 seconds will throw a failure
+            # how many times it needs to get success to verify if the application is health
+            successThreshold: 1
+
+          # only access the application when ready
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: 4000
+            periodSeconds: 3
+            failureThreshold: 1 # if got one failure the application is not ready
+            timeoutSeconds: 1 
+            successThreshold: 1

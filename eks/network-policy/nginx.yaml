@@ -1,0 +1,106 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: namespace-a
+  labels:
+    name: namespace-a
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: namespace-b
+  labels:
+    name: namespace-b
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: namespace-c
+  labels:
+    name: namespace-c
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: webapp
+  name: webapp
+  namespace: namespace-a
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: webapp
+  template:
+    metadata:
+      labels:
+        app: webapp
+    spec:
+      containers:
+        - image: nginx:latest
+          name: webapp
+          resources:
+            requests: 
+              cpu: "0.3" 
+              memory: 20Mi 
+            limits: 
+              cpu: "0.3"
+              memory: 25Mi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: webapp
+  name: webapp
+  namespace: namespace-b
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: webapp
+  template:
+    metadata:
+      labels:
+        app: webapp
+    spec:
+      containers:
+        - image: nginx:latest
+          name: webapp
+          resources:
+            requests: 
+              cpu: "0.3" 
+              memory: 20Mi 
+            limits: 
+              cpu: "0.3"
+              memory: 25Mi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: webapp
+  name: webapp
+  namespace: namespace-c
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: webapp
+  template:
+    metadata:
+      labels:
+        app: webapp
+    spec:
+      containers:
+        - image: nginx:latest
+          name: webapp
+          resources:
+            requests: 
+              cpu: "0.3" 
+              memory: 20Mi 
+            limits: 
+              cpu: "0.3"
+              memory: 25Mi
+    

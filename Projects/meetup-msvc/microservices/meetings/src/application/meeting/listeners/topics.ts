@@ -1,1 +1,0 @@
-export const CATEGORY_NAME_UPDATED = 'category.name_updated'

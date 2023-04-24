@@ -1,0 +1,17 @@
+--- 
+apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+
+metadata:
+  name: cluster-yaml
+  region: us-east-1
+
+managedNodeGroups:
+  - name: managed-ng-default
+    instanceType: t3.small
+    minSize: 1
+    maxSize: 3
+    desiredCapacity: 2
+    tags:
+      Name: my-cluster-eks-managed-node-group
+      owner: gabriel

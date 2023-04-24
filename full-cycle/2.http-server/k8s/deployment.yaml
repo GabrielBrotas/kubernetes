@@ -1,0 +1,25 @@
+# replica set manage the pods to be running, if the pod drop for some reason it will be generated again
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: goserver
+  labels:
+    app: goserver
+  
+spec:
+  selector: 
+    matchLabels:
+      app: goserver
+  # 2 pods running
+  replicas: 2
+
+  # pod template that we want running in our replica set
+  template:
+    metadata:
+      labels:
+        app: "goserver"
+    spec:
+      containers:
+        - name: "goserver"
+          image: gbrotas/go-hello:v3    

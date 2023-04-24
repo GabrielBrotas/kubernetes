@@ -1,0 +1,68 @@
+# replica set manage the pods to be running, if the pod drop for some reason it will be generated again
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: goserver
+  labels:
+    app: goserver
+  
+spec:
+  selector: 
+    matchLabels:
+      app: goserver
+  # 2 pods running
+  replicas: 1
+
+  # pod template that we want running in our replica set
+  template:
+    metadata:
+      labels:
+        app: "goserver"
+    spec:
+    
+      containers:
+        - name: "goserver"
+          image: gbrotas/go-hello:v6.3
+          # third method
+          envFrom:
+            - configMapRef:
+                name: goserver-env # load all keys          
+            - secretRef:
+                name: goserver-secret
+          
+          # env:
+          #   - name: NAME
+          #     # first method => Hardcode
+          #     # value: "Gabriel" 
+              
+          #     #second method
+          #     valueFrom:
+          #       configMapKeyRef:
+          #         name: goserver-env
+          #         key: NAME
+
+          #   - name: AGE
+          #     # value: "21" # first method
+          #     #second method
+          #     valueFrom:
+          #       configMapKeyRef:
+          #         name: goserver-env
+          #         key: AGE
+
+          # fourth method
+          volumeMounts:
+          # mount the volume config into my project
+            - mountPath: "/go/myfamily"
+              name: config
+              readOnly: true
+
+      # fourth method -> transform the config map into volume
+      # declare a volume with the values of members from configmap-family
+      volumes:
+        - name: config
+          configMap:
+            name: configmap-family
+            items:
+              - key: members
+                path: "family.txt"
